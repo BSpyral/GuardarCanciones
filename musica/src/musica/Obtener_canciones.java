@@ -17,17 +17,18 @@ public class Obtener_canciones {
 		List<String> nombres_archivos=new ArrayList<String>();
 		List<String> rutas_archivos=new ArrayList<String>();
 		int opcion_elegida;
-		String ruta="",nombreArchivoCanciones;
+		String ruta="",rutaGuardar="",nombreArchivoCanciones;
 		
 		do {
 			opcion_elegida = menu_opciones();
 			if (opcion_elegida==1) {			
 				do {
 					ruta=obtener_ubicacionCarpeta();
+					rutaGuardar=obtener_ubicacionCarpetaGuardar();
 						try {
-							nombreArchivoCanciones=crear_archivo(ruta);
+							nombreArchivoCanciones=crear_archivo(ruta,rutaGuardar);
 							nombres_archivos.add(nombreArchivoCanciones);
-							rutas_archivos.add(ruta+nombreArchivoCanciones);
+							rutas_archivos.add(rutaGuardar);
 						} catch (IOException e) {
 							System.out.println("No se pudo crear el archivo");
 							e.printStackTrace();
@@ -55,12 +56,13 @@ public class Obtener_canciones {
 					
 				try {
 					obtener_musicaFaltante(archivos,rutas_archivos.get(num_archivo));
+					System.out.println("Se ha comparado el archivo "+nombres_archivos.get(0)+" "
+									+ "con el archivo "+nombres_archivos.get(1)+" correctamente.");
 				} catch (FileNotFoundException e) {
 					System.out.println("Archivos Inexistentes");
 				} catch (IOException e) {
 					System.out.println("No se pudo leer el archivo");
 				}
-				System.out.println("Se ha creado archivo correctamente");
 			}
 			else {
 				System.out.println("No eligio una opcion, vuelva a ejecutar");
@@ -114,12 +116,21 @@ public class Obtener_canciones {
 		String ubicacionCarpeta=entrada.nextLine();
 		return ubicacionCarpeta;
 	}
+	
+	private static String obtener_ubicacionCarpetaGuardar() {
+		@SuppressWarnings("resource")
+		Scanner entrada=new Scanner(System.in);
+		System.out.println("Escriba la ruta donde guardar el archivo"); //Example: C:\Users\Bar\Music\CARPE
+		String ubicacionCarpeta=entrada.nextLine();
+		return ubicacionCarpeta;
+	}
 
-	private static String crear_archivo(String ruta) throws IOException {
+	private static String crear_archivo(String ruta,String rutaGuardar) throws IOException {
 		String nombre_carpeta=obtener_nombreCarpeta(ruta);
 		String nombre_archivo="Canciones en "+nombre_carpeta+" de disco "+ 
 								obtener_nombreDisco(ruta)+".txt";
-		File nombre_canciones=new File(nombre_archivo);
+		rutaGuardar+="\\"+nombre_archivo;
+		File nombre_canciones=new File(rutaGuardar);
 			if (!nombre_canciones.exists())	nombre_canciones.createNewFile();
 		FileWriter escribir_archivo = new FileWriter(nombre_canciones);
 		
@@ -157,7 +168,7 @@ public class Obtener_canciones {
 	private static int elegir_archivosComparar(List<String> archivos) {
 		int iterador=0,eleccion=0;
 		Scanner entrada=new Scanner (System.in);
-		System.out.println("¿Que archivo elige?");
+		System.out.println("¿Que archivo elige comparar?");
 		
 		do { 
 			while (archivos.size()>iterador) {
@@ -180,7 +191,7 @@ public class Obtener_canciones {
 	
 	private static String obtenerRutaArchivosExistentes(List<String> nombres_archivos) {	//Podria ser mucho mejor
 		List<String> archivos_carpeta=new ArrayList<String>();
-		System.out.println("Escriba el nombre de la carpeta");
+		System.out.println("Escriba el nombre de la carpeta donde se guardan los nombres de los archivos");
 		Scanner entrada=new Scanner (System.in);
 		String ruta=entrada.nextLine();
 		
